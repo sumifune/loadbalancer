@@ -1,0 +1,298 @@
+# basic conf
+# server {
+
+#   listen 80;
+#   server_name "_";
+
+#   location / {
+#      root /usr/share/nginx/app1/frontend;
+#      try_files $uri /index.html;
+#   }
+
+# }
+
+# stage 1 - launching one container
+# server {
+
+#   listen 80;
+#   server_name mydomain.com www.mydomain.com;
+
+#   # location = /app/ {
+#   #   proxy_pass http://http1:80/;
+#   # }
+
+#   location / {
+#      root /usr/share/nginx/app1/frontend;
+#      try_files $uri /index.html;
+#   }
+
+# }
+
+# stage 2 - wp
+# server {
+
+#   listen 0.0.0.0:80;
+#   server_name app.mydomain.com;
+
+#   location / {
+#     proxy_pass http://wp:80/;
+#    # proxy_redirect off;
+#    # proxy_set_header Host $host;
+#    # proxy_set_header X-Real-IP $remote_addr;
+#    # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#    # proxy_set_header X-Forwarded-Host $server_name;
+#    # proxy_set_header Upgrade $http_upgrade;
+#    # proxy_set_header X-Forwarded-Proto $scheme;
+#     proxy_set_header X-Real-IP $remote_addr;
+#     proxy_set_header HOST $http_host;
+#     proxy_set_header X-NginX-Proxy true;
+#     proxy_redirect off;
+#   }
+
+#   # location / {
+#   #    root /usr/share/nginx/app2/frontend;
+#   #    try_files $uri /index.html;
+#   # }
+
+# }
+
+
+
+server {
+
+  # when no server_name directive is provided
+  # default_server will be used
+  # listen 80 default_server;
+  # listen [::]:80 default_server;
+  # listen 443 ssl http2 default_server;
+  # listen [::]:443 ssl http2 default_server;
+
+  listen 80;
+  listen [::]:80;
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+
+  server_name paquito.com www.paquito.com;
+  # default root - can be overridden by any location block if needed
+  root /usr/share/nginx/paquito.com/frontend;
+	# index index.html index.htm;
+
+	# ssl on; DEPRECATED
+
+  ssl_certificate /etc/nginx/ssl/paquito.com/paquito-selfsigned.crt;
+  ssl_certificate_key /etc/nginx/ssl/paquito.com/paquito-selfsigned.key;
+
+	# ssl_ciphers HIGH:!aNULL:!MD5;
+  # location = /app/ {
+  #   proxy_pass http://http1:80/;
+  # }
+
+  location / {
+     try_files $uri /index.html;
+  }
+
+}
+
+server {
+
+  listen 80;
+  listen [::]:80;
+  listen 443 ssl http2;
+  listen [::]:443 ssl http2;
+
+  server_name manolito.com www.manolito.com;
+  # default root - can be overridden by any location block if needed
+  root /usr/share/nginx/manolito.com/frontend/build;
+
+  ssl_certificate /etc/nginx/ssl/manolito.com/manolito-selfsigned.crt;
+  ssl_certificate_key /etc/nginx/ssl/manolito.com/manolito-selfsigned.key;
+
+  location / {
+     try_files $uri /index.html;
+  }
+
+  # location / {
+  #     # if the original URI resolve into an existing file or directory,
+  #     # the request is redirected to the named location -> main
+  #         try_files $uri @main;
+  # }
+  # named location -> main
+  location /api {
+          proxy_pass http://api_manolito:3000;
+          add_header X-Frame-Options "SAMEORIGIN" always;
+          add_header X-XSS-Protection "1; mode=block" always;
+          add_header X-Content-Type-Options "nosniff" always;
+          add_header Referrer-Policy "no-referrer-when-downgrade" always;
+          add_header Content-Security-Policy "default-src * data: 'unsafe-eval' 'unsafe-inline'" always;
+          # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+          # enable strict transport security only if you understand the implications
+  }
+
+}
+
+
+# ======================== WP ===================================
+# server {
+
+#   listen 80;
+#   listen [::]:80;
+#   listen 443 ssl http2;
+#   listen [::]:443 ssl http2;
+
+#   server_name sumifune.com www.sumifune.com;
+#   # default root - can be overridden by any location block if needed
+#   root /usr/share/nginx/manolito.com/frontend;
+
+#   ssl_certificate /etc/nginx/ssl/sumifune.com/sumifune-selfsigned.crt;
+#   ssl_certificate_key /etc/nginx/ssl/sumifune.com/sumifune-selfsigned.key;
+
+#   # location / {
+#   #    try_files $uri /index.html;
+#   # }
+
+
+
+#   add_header X-Frame-Options "SAMEORIGIN" always;
+#   add_header X-XSS-Protection "1; mode=block" always;
+#   add_header X-Content-Type-Options "nosniff" always;
+#   add_header Referrer-Policy "no-referrer-when-downgrade" always;
+#   add_header Content-Security-Policy "default-src * data: 'unsafe-eval' 'unsafe-inline'" always;
+
+#   location / {
+#     proxy_pass http://wordpress:80/;
+#     proxy_redirect off;
+#     # proxy_set_header Host $host;
+#     proxy_set_header X-Real-IP $remote_addr;
+#     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#     proxy_set_header X-Forwarded-Host $server_name;
+#     proxy_set_header Upgrade $http_upgrade;
+#     proxy_set_header X-Forwarded-Proto $scheme;
+#     proxy_set_header X-Real-IP $remote_addr;
+#     proxy_set_header HOST $http_host;
+#     proxy_set_header X-NginX-Proxy true;
+#   }
+
+# }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# server {
+#         listen 80;
+#         listen [::]:80;
+
+#         # server_name example.com www.example.com;
+#         server_name sumifune.com www.sumifune.com;
+
+#         # location ~ /.well-known/acme-challenge {
+#         #         allow all;
+#         #         root /var/www/html;
+#         # }
+
+#         location / {
+#                 rewrite ^ https://$host$request_uri? permanent;
+#         }
+# }
+
+# server {
+#         listen 443 ssl http2;
+#         listen [::]:443 ssl http2;
+#         # server_name example.com www.example.com;
+#         server_name sumifune.com www.sumifune.com;
+
+#         index index.php index.html index.htm;
+
+#         root /var/www/html;
+
+#         server_tokens off;
+
+#         # ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+#         # ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+#         ssl_certificate /etc/nginx/ssl/sumifune.com/sumifune-selfsigned.crt;
+#         ssl_certificate_key /etc/nginx/ssl/sumifune.com/sumifune-selfsigned.key;
+
+#         # include /etc/nginx/conf.d/options-ssl-nginx.conf;
+
+#         add_header X-Frame-Options "SAMEORIGIN" always;
+#         add_header X-XSS-Protection "1; mode=block" always;
+#         add_header X-Content-Type-Options "nosniff" always;
+#         add_header Referrer-Policy "no-referrer-when-downgrade" always;
+#         add_header Content-Security-Policy "default-src * data: 'unsafe-eval' 'unsafe-inline'" always;
+
+#         # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+#         # enable strict transport security only if you understand the implications
+
+#         location / {
+#                 try_files $uri $uri/ /index.php$is_args$args;
+#         }
+
+#         location ~ \.php$ {
+#                 try_files $uri =404;
+#                 fastcgi_split_path_info ^(.+\.php)(/.+)$;
+#                 # fastcgi_pass wordpress:80;
+#                 fastcgi_pass wordpress:9000;
+#                 fastcgi_index index.php;
+#                 include fastcgi_params;
+#                 fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+#                 fastcgi_param PATH_INFO $fastcgi_path_info;
+#         }
+
+#         location ~ /\.ht {
+#                 deny all;
+#         }
+
+#         location = /favicon.ico {
+#                 log_not_found off; access_log off;
+#         }
+#         location = /robots.txt {
+#                 log_not_found off; access_log off; allow all;
+#         }
+#         location ~* \.(css|gif|ico|jpeg|jpg|js|png)$ {
+#                 expires max;
+#                 log_not_found off;
+#         }
+# }

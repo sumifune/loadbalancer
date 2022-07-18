@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  loadbalancer:
+    image: nginx:mainline-alpine
+    container_name: loadbalancer
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "81:81"
+    volumes:
+      - web-root:/usr/share/nginx
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./certkey:/etc/nginx/ssl
+    networks:
+      - default
+volumes:
+  # all projects root directory
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      # full path. Cannot make it work using a relative path. Do not use ${PWD}
+      # device: /${PWD}/public
+      device: /c/Users/Nombre/docker/projects
+      o: bind
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+# specify the name of the network separately from the name
+# used to refer to it within the Compose file:
+networks:
+  default:
+    external:
+      name: vps-net

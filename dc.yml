@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  http1:
+    image: httpd:2.4
+    container_name: http1
+    restart: unless-stopped
+    networks:
+      - app-network1
+
+  http2:
+    image: httpd:2.4
+    container_name: http2
+    restart: unless-stopped
+    networks:
+      - app-network1
+
+  loadbalancer:
+    image: nginx:mainline-alpine
+    container_name: loadbalancer
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"
+    volumes:
+      # - web-root1:/usr/share/nginx/html
+      - web-root1:/usr/share/nginx
+      - ./nginx-conf:/etc/nginx/conf.d
+    depends_on:
+      - http1
+    networks:
+      - app-network1
+
+volumes:
+  web-root1:
+    driver: local
+    driver_opts:
+      type: none
+      # ffull path. Cannot make it work using a relative path. Do not use ${PWD}
+      # device: /${PWD}/public
+      # device: /c/Users/Nombre/docker/projects/otomo/public
+      device: /c/Users/Nombre/docker/projects
+      o: bind
+
+networks:
+  app-network1:
+    driver: bridge
